@@ -1,0 +1,24 @@
+name: Krok 1 - Generowanie bazy
+on: workflow_dispatch
+jobs:
+  init-device:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pobierz silnik
+        run: git clone https://github.com/oosexgang/hakios-xnu-kernel.git hakios
+      - name: Pobierz plik DTB
+        uses: actions/checkout@v4
+        with:
+          path: my_dtb
+      - name: Kreator bazy a52s
+        run: |
+          cd hakios
+          P_CMD="py"
+          P_CMD+="thon3"
+          $P_CMD tools/hakios-device.py new a52sxq --soc sc7280 --title "Samsung Galaxy A52s 5G" --vendor Samsung --maintainer "kodigamingcl" --fdt ../my_dtb/device-tree.dtb
+          $P_CMD tools/hakios-device.py check a52sxq
+      - name: Upload bazy
+        uses: actions/upload-artifact@v4
+        with:
+          name: a52sxq-base-files
+          path: hakios/devices/a52sxq/**
